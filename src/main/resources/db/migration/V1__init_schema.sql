@@ -1,6 +1,3 @@
--- Enable case-insensitive text type for clean deduplication of word.text
-CREATE EXTENSION IF NOT EXISTS citext;
-
 -- =========================
 -- 1) CATEGORY (fixed list)
 -- =========================
@@ -33,18 +30,16 @@ CREATE INDEX idx_word_group_category_id ON word_group (category_id);
 CREATE TABLE word
 (
     id                BIGSERIAL PRIMARY KEY,
-    text              CITEXT      NOT NULL, -- user input, case-insensitive
+    text              VARCHAR(255) NOT NULL,
     context           TEXT,
 
-    processing_status VARCHAR(16) NOT NULL DEFAULT 'NEW',
-    learning_status   VARCHAR(16) NOT NULL DEFAULT 'TO_REVIEW',
+    processing_status VARCHAR(16)  NOT NULL DEFAULT 'NEW',
+    learning_status   VARCHAR(16)  NOT NULL DEFAULT 'TO_REVIEW',
 
     group_id          BIGINT REFERENCES word_group (id),
 
-    created_at        TIMESTAMP   NOT NULL DEFAULT now(),
-    updated_at        TIMESTAMP   NOT NULL DEFAULT now(),
-
-    CONSTRAINT uq_word_text UNIQUE (text),
+    created_at        TIMESTAMP    NOT NULL DEFAULT now(),
+    updated_at        TIMESTAMP    NOT NULL DEFAULT now(),
 
     CONSTRAINT chk_processing_status CHECK (
         processing_status IN ('NEW', 'ENRICHING', 'READY', 'FAILED')
@@ -54,6 +49,7 @@ CREATE TABLE word
         )
 );
 
+CREATE UNIQUE INDEX uq_word_text_ci ON word (lower(text));
 CREATE INDEX idx_word_processing_status ON word (processing_status);
 CREATE INDEX idx_word_learning_status ON word (learning_status);
 CREATE INDEX idx_word_group_id ON word (group_id);

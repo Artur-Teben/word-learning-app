@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Word Capture</title>
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Arial, sans-serif;
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+
+        h1 {
+            margin-bottom: 16px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 12px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #222;
+            background: #222;
+            color: white;
+            cursor: pointer;
+        }
+
+        .message {
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .error {
+            background: #ffe8e8;
+            border: 1px solid #ffb3b3;
+        }
+
+        .success {
+            background: #eaffea;
+            border: 1px solid #b8ffb8;
+        }
+
+        .word-row {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meta {
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Word Capture</h1>
+
+<!-- Flash error -->
+<div th:if="${error}" class="message error" th:text="${error}"></div>
+
+<!-- Flash success -->
+<div th:if="${success}" class="message success" th:text="${success}"></div>
+
+<div class="card">
+    <form th:action="@{/words}" th:object="${createWordRequest}" method="post">
+
+        <label for="text">Word</label>
+        <input id="text"
+               type="text"
+               th:field="*{text}"
+               placeholder="e.g. simmer"
+               required/>
+
+        <label for="context">Context (optional)</label>
+        <textarea id="context"
+                  rows="3"
+                  th:field="*{context}"
+                  placeholder="Sentence from the book..."></textarea>
+
+        <button type="submit">Save</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>Saved words</h2>
+
+    <div th:if="${#lists.isEmpty(words)}" class="meta">
+        No words yet.
+    </div>
+
+    <div th:each="w : ${words}" class="word-row">
+        <strong th:text="${w.text}"></strong>
+
+        <div class="meta" th:if="${w.context}" th:text="${w.context}"></div>
+
+        <div class="meta">
+            <span th:text="${w.processingStatus}"></span>
+            |
+            <span th:text="${w.learningStatus}"></span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
