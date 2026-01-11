@@ -11,6 +11,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(NotFoundException.class)
+    public String handleNotFound(NotFoundException ex, RedirectAttributes ra) {
+        ra.addFlashAttribute("error", ex.getMessage());
+        return "redirect:/";
+    }
     @ExceptionHandler(WordAlreadyExistsException.class)
     public String handleDuplicate(WordAlreadyExistsException ex, RedirectAttributes ra) {
         ra.addFlashAttribute("error", ex.getMessage());

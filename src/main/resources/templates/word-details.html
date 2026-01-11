@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${word.text}">Word Details</title>
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Arial, sans-serif;
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .transcription {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 4px;
+        }
+
+        .value {
+            margin-bottom: 12px;
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .status.ready {
+            background: #eaffea;
+            color: #2a7d2a;
+        }
+
+        .status.failed {
+            background: #ffe8e8;
+            color: #a33;
+        }
+
+        .meta {
+            color: #666;
+            font-size: 13px;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<a th:href="@{/}" class="back-link">← Back to list</a>
+
+<h1 th:text="${word.text}">Word</h1>
+
+<div th:if="${word.enrichment?.transcription}" class="transcription" th:text="${word.enrichment.transcription}"></div>
+
+<span th:class="'status ' + ${word.processingStatus.name().toLowerCase()}" th:text="${word.processingStatus}"></span>
+
+<div th:if="${word.context}" class="card">
+    <div class="label">Context</div>
+    <div class="value" th:text="${word.context}"></div>
+</div>
+
+<div th:if="${word.enrichment}" class="card">
+    <div class="label">Meaning (English)</div>
+    <div class="value" th:text="${word.enrichment.meaningEn}"></div>
+
+    <div class="label">Translation (Ukrainian)</div>
+    <div class="value" th:text="${word.enrichment.translationUk}"></div>
+
+    <div class="label">Lemma</div>
+    <div class="value" th:text="${word.enrichment.lemma}"></div>
+
+    <div th:if="${word.enrichment.partOfSpeech}">
+        <div class="label">Part of Speech</div>
+        <div class="value" th:text="${word.enrichment.partOfSpeech}"></div>
+    </div>
+
+    <div class="label">Commonness</div>
+    <div class="value" th:text="${word.enrichment.commonness}"></div>
+
+    <div th:if="${word.enrichment.cefrLevel}">
+        <div class="label">CEFR Level</div>
+        <div class="value" th:text="${word.enrichment.cefrLevel}"></div>
+    </div>
+
+    <div th:if="${word.enrichment.synonyms != null && word.enrichment.synonyms.length > 0}">
+        <div class="label">Synonyms</div>
+        <div class="tags">
+            <span th:each="syn : ${word.enrichment.synonyms}" class="tag" th:text="${syn}"></span>
+        </div>
+    </div>
+
+    <div th:if="${word.enrichment.usageTags != null && word.enrichment.usageTags.length > 0}" style="margin-top: 12px;">
+        <div class="label">Usage Tags</div>
+        <div class="tags">
+            <span th:each="tag : ${word.enrichment.usageTags}" class="tag" th:text="${tag}"></span>
+        </div>
+    </div>
+</div>
+
+<div th:if="${word.enrichment == null}" class="card">
+    <div class="value">Enrichment failed or not available.</div>
+</div>
+
+<div class="meta">
+    Added: <span th:text="${#temporals.format(word.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+</div>
+
+</body>
+</html>

@@ -38,6 +38,9 @@ public class WordEntity {
     @Column(name = "group_id")
     private Long groupId;
 
+    @OneToOne(mappedBy = "word", cascade = CascadeType.ALL)
+    private WordEnrichmentEntity enrichment;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
