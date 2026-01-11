@@ -42,7 +42,7 @@ CREATE TABLE word
     updated_at        TIMESTAMP    NOT NULL DEFAULT now(),
 
     CONSTRAINT chk_processing_status CHECK (
-        processing_status IN ('NEW', 'ENRICHING', 'READY', 'FAILED')
+        processing_status IN ('NEW', 'READY', 'FAILED')
         ),
     CONSTRAINT chk_learning_status CHECK (
         learning_status IN ('TO_REVIEW', 'LEARNING', 'LEARNED', 'DISCARDED')
