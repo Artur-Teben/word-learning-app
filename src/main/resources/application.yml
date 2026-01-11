@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: word-learning-app
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vocab
+    username: vocab
+    password: vocab
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
