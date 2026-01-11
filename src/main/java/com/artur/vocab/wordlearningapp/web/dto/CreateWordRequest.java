@@ -1,4 +1,4 @@
-package com.artur.vocab.wordlearningapp.domain.dto;
+package com.artur.vocab.wordlearningapp.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

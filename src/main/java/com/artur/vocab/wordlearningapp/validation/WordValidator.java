@@ -2,7 +2,7 @@ package com.artur.vocab.wordlearningapp.validation;
 
 
 import com.artur.vocab.wordlearningapp.repo.WordRepository;
-import com.artur.vocab.wordlearningapp.validation.exception.WordAlreadyExistsException;
+import com.artur.vocab.wordlearningapp.exception.WordAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

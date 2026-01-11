@@ -1,6 +1,6 @@
-package com.artur.vocab.wordlearningapp.validation.exception.handler;
+package com.artur.vocab.wordlearningapp.web.exception;
 
-import com.artur.vocab.wordlearningapp.validation.exception.WordAlreadyExistsException;
+import com.artur.vocab.wordlearningapp.exception.WordAlreadyExistsException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;

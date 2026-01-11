@@ -1,5 +1,7 @@
-package com.artur.vocab.wordlearningapp.domain;
+package com.artur.vocab.wordlearningapp.domain.entity;
 
+import com.artur.vocab.wordlearningapp.domain.enums.LearningStatus;
+import com.artur.vocab.wordlearningapp.domain.enums.ProcessingStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

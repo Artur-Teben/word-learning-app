@@ -1,6 +1,6 @@
 package com.artur.vocab.wordlearningapp.repo;
 
-import com.artur.vocab.wordlearningapp.domain.WordEntity;
+import com.artur.vocab.wordlearningapp.domain.entity.WordEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

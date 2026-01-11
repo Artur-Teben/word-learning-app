@@ -1,4 +1,4 @@
-package com.artur.vocab.wordlearningapp.validation.exception;
+package com.artur.vocab.wordlearningapp.exception;
 
 public class WordAlreadyExistsException extends RuntimeException {
 

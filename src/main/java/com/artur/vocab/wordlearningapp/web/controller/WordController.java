@@ -1,9 +1,9 @@
-package com.artur.vocab.wordlearningapp.controller;
+package com.artur.vocab.wordlearningapp.web.controller;
 
 
 import com.artur.vocab.wordlearningapp.repo.WordRepository;
 import com.artur.vocab.wordlearningapp.service.WordService;
-import com.artur.vocab.wordlearningapp.domain.dto.CreateWordRequest;
+import com.artur.vocab.wordlearningapp.web.dto.CreateWordRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

@@ -1,7 +1,6 @@
 package com.artur.vocab.wordlearningapp.service;
 
-import com.artur.vocab.wordlearningapp.domain.WordEntity;
-import com.artur.vocab.wordlearningapp.domain.dto.CreateWordRequest;
+import com.artur.vocab.wordlearningapp.web.dto.CreateWordRequest;
 import com.artur.vocab.wordlearningapp.mapper.WordMapper;
 import com.artur.vocab.wordlearningapp.validation.WordValidator;
 import com.artur.vocab.wordlearningapp.repo.WordRepository;
