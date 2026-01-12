@@ -1,4 +1,4 @@
-package com.artur.vocab.wordlearningapp.web.exception;
+package com.artur.vocab.wordlearningapp.exception;
 
 public class NotFoundException extends RuntimeException {
 

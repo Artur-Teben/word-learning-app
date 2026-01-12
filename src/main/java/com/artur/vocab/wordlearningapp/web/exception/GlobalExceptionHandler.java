@@ -1,6 +1,6 @@
 package com.artur.vocab.wordlearningapp.web.exception;
 
-import com.artur.vocab.wordlearningapp.exception.WordAlreadyExistsException;
+import com.artur.vocab.wordlearningapp.exception.NotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,11 +13,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public String handleNotFound(NotFoundException ex, RedirectAttributes ra) {
-        ra.addFlashAttribute("error", ex.getMessage());
-        return "redirect:/";
-    }
-    @ExceptionHandler(WordAlreadyExistsException.class)
-    public String handleDuplicate(WordAlreadyExistsException ex, RedirectAttributes ra) {
         ra.addFlashAttribute("error", ex.getMessage());
         return "redirect:/";
     }

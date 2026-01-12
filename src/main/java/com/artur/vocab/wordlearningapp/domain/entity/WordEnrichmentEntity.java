@@ -1,13 +1,15 @@
 package com.artur.vocab.wordlearningapp.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Entity
 @Table(name = "word_enrichment")
 public class WordEnrichmentEntity {

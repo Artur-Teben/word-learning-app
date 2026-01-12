@@ -98,7 +98,7 @@
 
 <span th:class="'status ' + ${word.processingStatus.name().toLowerCase()}" th:text="${word.processingStatus}"></span>
 
-<div th:if="${word.context}" class="card">
+<div th:if="${word.context != null && !word.context.isBlank()}" class="card">
     <div class="label">Context</div>
     <div class="value" th:text="${word.context}"></div>
 </div>
@@ -126,17 +126,17 @@
         <div class="value" th:text="${word.enrichment.cefrLevel}"></div>
     </div>
 
-    <div th:if="${word.enrichment.synonyms != null && word.enrichment.synonyms.length > 0}">
+    <div th:if="${word.enrichment.synonyms != null && !word.enrichment.synonyms.isBlank()}">
         <div class="label">Synonyms</div>
         <div class="tags">
-            <span th:each="syn : ${word.enrichment.synonyms}" class="tag" th:text="${syn}"></span>
+            <span th:each="syn : ${#strings.arraySplit(word.enrichment.synonyms, ',')}" class="tag" th:text="${syn}"></span>
         </div>
     </div>
 
-    <div th:if="${word.enrichment.usageTags != null && word.enrichment.usageTags.length > 0}" style="margin-top: 12px;">
+    <div th:if="${word.enrichment.usageTags != null && !word.enrichment.usageTags.isBlank()}" style="margin-top: 12px;">
         <div class="label">Usage Tags</div>
         <div class="tags">
-            <span th:each="tag : ${word.enrichment.usageTags}" class="tag" th:text="${tag}"></span>
+            <span th:each="tag : ${#strings.arraySplit(word.enrichment.usageTags, ',')}" class="tag" th:text="${tag}"></span>
         </div>
     </div>
 </div>
