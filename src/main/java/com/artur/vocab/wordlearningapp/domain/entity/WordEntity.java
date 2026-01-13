@@ -35,9 +35,6 @@ public class WordEntity {
     @Column(name = "learning_status", nullable = false)
     private LearningStatus learningStatus = LearningStatus.TO_REVIEW;
 
-    @Column(name = "group_id")
-    private Long groupId;
-
     @OneToOne(mappedBy = "word", cascade = CascadeType.ALL)
     private WordEnrichmentEntity enrichment;
 

@@ -1,9 +1,7 @@
 package com.artur.vocab.wordlearningapp.service;
 
 import com.artur.vocab.wordlearningapp.config.property.OpenAiProperties;
-import com.artur.vocab.wordlearningapp.domain.entity.CategoryEntity;
 import com.artur.vocab.wordlearningapp.domain.entity.WordEnrichmentEntity;
-import com.artur.vocab.wordlearningapp.repo.CategoryRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,8 @@ public class OpenAiWordEnricher implements WordEnricher {
     private final RestClient openAiRestClient;
     private final ObjectMapper objectMapper;
     private final OpenAiProperties properties;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
+    private final GroupService groupService;
 
     @Override
     public WordEnrichmentEntity enrich(String text, String context) {
@@ -37,7 +36,6 @@ public class OpenAiWordEnricher implements WordEnricher {
                         Map.of("role", "user", "content", prompt)
                 )
         );
-
 
         long start = System.currentTimeMillis();
 
@@ -68,7 +66,9 @@ public class OpenAiWordEnricher implements WordEnricher {
               "cefrLevel": "A1/A2/B1/B2/C1/C2",
               "usageTags": ["FORMAL", "INFORMAL", "SLANG", "TECHNICAL", "ARCHAIC", "LITERARY", "VULGAR", "DIALECT", "JARGON"],
               "synonyms": ["synonym1", "synonym2"],
-              "categoryCode": "CATEGORY_CODE"
+              "categoryCode": "CATEGORY_CODE",
+              "groupKey": "GROUP_KEY",
+              "groupName": "Group Display Name"
             }
             
             Category must be one of:
@@ -83,6 +83,20 @@ public class OpenAiWordEnricher implements WordEnricher {
             - synonyms: 2-5 common synonyms, empty array if none
             - For phrases: treat as single unit, lemma is the base form of the phrase
             - categoryCode: pick the single best matching category from the list above, use GENERAL if unsure
+            - groupKey: UPPER_SNAKE_CASE semantic group within the category
+            - groupName: human-readable name for the group
+            
+            Group examples (follow this pattern):
+            - fork, spoon, knife → FOOD / EATING_UTENSILS / "Eating Utensils"
+            - oven, fridge, microwave → HOME / KITCHEN_APPLIANCES / "Kitchen Appliances"
+            - run, walk, jump → ACTIONS / MOVEMENT_VERBS / "Movement Verbs"
+            - happy, sad, angry → EMOTIONS / BASIC_EMOTIONS / "Basic Emotions"
+            - doctor, nurse, surgeon → HEALTH / MEDICAL_PROFESSIONALS / "Medical Professionals"
+            - car, bus, train → TRAVEL / VEHICLES / "Vehicles"
+            - head, arm, leg → HEALTH / BODY_PARTS / "Body Parts"
+            - shirt, pants, dress → CLOTHING / GARMENTS / "Garments"
+            
+            Keep groups broad enough to contain 5-20 related words. Avoid overly specific groups.
             """;
     }
 
@@ -100,10 +114,11 @@ public class OpenAiWordEnricher implements WordEnricher {
             JsonNode data = objectMapper.readTree(content);
 
             String categoryCode = data.path("categoryCode").asText("GENERAL");
-            Long categoryId = categoryRepository.findByCode(categoryCode)
-                    .or(() -> categoryRepository.findByCode("GENERAL"))
-                    .map(CategoryEntity::getId)
-                    .orElse(null);
+            String groupKey = data.path("groupKey").asText(null);
+            String groupName = data.path("groupName").asText(null);
+
+            Long categoryId = categoryService.resolveCategory(categoryCode);
+            Long groupId = groupService.resolveGroup(categoryId, groupKey, groupName);
 
             return WordEnrichmentEntity.builder()
                     .lemma(data.path("lemma").asText(originalText.toLowerCase()))
@@ -119,6 +134,7 @@ public class OpenAiWordEnricher implements WordEnricher {
                     .rawAiResponse(responseBody)
                     .enrichedAt(Instant.now())
                     .categoryId(categoryId)
+                    .groupId(groupId)
                     .build();
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse OpenAI response", e);

@@ -131,6 +131,11 @@
         <div class="value" th:text="${category?.name}"></div>
     </div>
 
+    <div th:if="${group != null}">
+        <div class="label">Group</div>
+        <div class="value" th:text="${group.name}"></div>
+    </div>
+
     <div th:if="${word.enrichment.synonyms != null && !word.enrichment.synonyms.isBlank()}">
         <div class="label">Synonyms</div>
         <div class="tags">

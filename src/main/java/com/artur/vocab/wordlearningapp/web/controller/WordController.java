@@ -1,8 +1,9 @@
 package com.artur.vocab.wordlearningapp.web.controller;
 
-import com.artur.vocab.wordlearningapp.domain.entity.CategoryEntity;
 import com.artur.vocab.wordlearningapp.domain.entity.WordEntity;
 import com.artur.vocab.wordlearningapp.repo.WordRepository;
+import com.artur.vocab.wordlearningapp.service.CategoryService;
+import com.artur.vocab.wordlearningapp.service.GroupService;
 import com.artur.vocab.wordlearningapp.service.WordService;
 import com.artur.vocab.wordlearningapp.web.dto.CreateWordRequest;
 import jakarta.validation.Valid;
@@ -20,6 +21,8 @@ public class WordController {
 
     private final WordRepository wordRepository;
     private final WordService wordService;
+    private final CategoryService categoryService;
+    private final GroupService groupService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -39,9 +42,9 @@ public class WordController {
         WordEntity word = wordService.getWord(id);
         model.addAttribute("word", word);
 
-        if (word.getEnrichment() != null && word.getEnrichment().getCategoryId() != null) {
-            CategoryEntity category = wordService.getCategory(word.getEnrichment().getCategoryId());
-            model.addAttribute("category", category);
+        if (word.getEnrichment() != null) {
+            model.addAttribute("category", categoryService.getCategory(word.getEnrichment().getCategoryId()));
+            model.addAttribute("group", groupService.getGroup(word.getEnrichment().getGroupId()));
         }
 
         return "word-details";

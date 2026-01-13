@@ -26,6 +26,9 @@ public class WordEnrichmentEntity {
     @Column(name = "category_id")
     private Long categoryId;
 
+    @Column(name = "group_id")
+    private Long groupId;
+
     @Column(name = "lemma", nullable = false)
     private String lemma;
 
