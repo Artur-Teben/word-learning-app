@@ -53,6 +53,11 @@ public class WordService {
         return word;
     }
 
+    @Transactional
+    public void deleteWord(Long id) {
+        wordRepository.deleteById(id);
+    }
+
     private WordEntity enrichAndSave(WordEntity word) {
         try {
             WordEnrichmentEntity enrichment = wordEnricher.enrich(word.getText(), word.getContext());
