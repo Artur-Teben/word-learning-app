@@ -1,5 +1,6 @@
 package com.artur.vocab.wordlearningapp.web.controller;
 
+import com.artur.vocab.wordlearningapp.domain.entity.CategoryEntity;
 import com.artur.vocab.wordlearningapp.domain.entity.WordEntity;
 import com.artur.vocab.wordlearningapp.repo.WordRepository;
 import com.artur.vocab.wordlearningapp.service.WordService;
@@ -37,6 +38,12 @@ public class WordController {
     public String getWord(@PathVariable Long id, Model model) {
         WordEntity word = wordService.getWord(id);
         model.addAttribute("word", word);
+
+        if (word.getEnrichment() != null && word.getEnrichment().getCategoryId() != null) {
+            CategoryEntity category = wordService.getCategory(word.getEnrichment().getCategoryId());
+            model.addAttribute("category", category);
+        }
+
         return "word-details";
     }
 }

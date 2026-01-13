@@ -23,6 +23,9 @@ public class WordEnrichmentEntity {
     @JoinColumn(name = "word_id")
     private WordEntity word;
 
+    @Column(name = "category_id")
+    private Long categoryId;
+
     @Column(name = "lemma", nullable = false)
     private String lemma;
 

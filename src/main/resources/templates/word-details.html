@@ -126,6 +126,11 @@
         <div class="value" th:text="${word.enrichment.cefrLevel}"></div>
     </div>
 
+    <div th:if="${word.enrichment.categoryId != null}">
+        <div class="label">Category</div>
+        <div class="value" th:text="${category?.name}"></div>
+    </div>
+
     <div th:if="${word.enrichment.synonyms != null && !word.enrichment.synonyms.isBlank()}">
         <div class="label">Synonyms</div>
         <div class="tags">

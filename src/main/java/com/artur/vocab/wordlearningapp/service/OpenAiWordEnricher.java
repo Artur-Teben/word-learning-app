@@ -1,7 +1,9 @@
 package com.artur.vocab.wordlearningapp.service;
 
 import com.artur.vocab.wordlearningapp.config.property.OpenAiProperties;
+import com.artur.vocab.wordlearningapp.domain.entity.CategoryEntity;
 import com.artur.vocab.wordlearningapp.domain.entity.WordEnrichmentEntity;
+import com.artur.vocab.wordlearningapp.repo.CategoryRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class OpenAiWordEnricher implements WordEnricher {
     private final RestClient openAiRestClient;
     private final ObjectMapper objectMapper;
     private final OpenAiProperties properties;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public WordEnrichmentEntity enrich(String text, String context) {
@@ -52,30 +55,35 @@ public class OpenAiWordEnricher implements WordEnricher {
 
     private String systemPrompt() {
         return """
-                You are a vocabulary assistant for an English learner (native Ukrainian speaker).
-                
-                Given a word or phrase, return a JSON object with these exact fields:
-                {
-                  "lemma": "base form of the word/phrase",
-                  "partOfSpeech": "noun/verb/adjective/adverb/phrase/other",
-                  "meaningEn": "clear, concise explanation in English (1-2 sentences)",
-                  "translationUk": "Ukrainian translation",
-                  "transcription": "IPA transcription, e.g. /wɜːrd/",
-                  "commonness": "VERY_COMMON/COMMON/MODERATE/UNCOMMON/RARE",
-                  "cefrLevel": "A1/A2/B1/B2/C1/C2",
-                  "usageTags": ["FORMAL", "INFORMAL", "SLANG", "TECHNICAL", "ARCHAIC", "LITERARY", "VULGAR", "DIALECT", "JARGON"],
-                  "synonyms": ["synonym1", "synonym2"]
-                }
-                
-                Rules:
-                - Return ONLY valid JSON, no markdown, no explanation
-                - meaningEn: practical meaning useful for reading comprehension
-                - translationUk: natural Ukrainian, not word-by-word
-                - commonness: how often a typical native speaker uses this
-                - usageTags: include only applicable tags, empty array if none
-                - synonyms: 2-5 common synonyms, empty array if none
-                - For phrases: treat as single unit, lemma is the base form of the phrase
-                """;
+            You are a vocabulary assistant for an English learner (native Ukrainian speaker).
+            
+            Given a word or phrase, return a JSON object with these exact fields:
+            {
+              "lemma": "base form of the word/phrase",
+              "partOfSpeech": "noun/verb/adjective/adverb/phrase/other",
+              "meaningEn": "clear, concise explanation in English (1-2 sentences)",
+              "translationUk": "Ukrainian translation",
+              "transcription": "IPA transcription, e.g. /wɜːrd/",
+              "commonness": "VERY_COMMON/COMMON/MODERATE/UNCOMMON/RARE",
+              "cefrLevel": "A1/A2/B1/B2/C1/C2",
+              "usageTags": ["FORMAL", "INFORMAL", "SLANG", "TECHNICAL", "ARCHAIC", "LITERARY", "VULGAR", "DIALECT", "JARGON"],
+              "synonyms": ["synonym1", "synonym2"],
+              "categoryCode": "CATEGORY_CODE"
+            }
+            
+            Category must be one of:
+            GENERAL, PEOPLE, EMOTIONS, COMMUNICATION, WORK, EDUCATION, HOME, FOOD, HEALTH, SPORT, TRAVEL, NATURE, TIME, MONEY, LAW, TECH, ART, MEDIA, CLOTHING, CITY, ACTIONS, DESCRIPTIONS, OBJECTS, SOCIAL, MENTAL
+            
+            Rules:
+            - Return ONLY valid JSON, no markdown, no explanation
+            - meaningEn: practical meaning useful for reading comprehension
+            - translationUk: natural Ukrainian, not word-by-word
+            - commonness: how often a typical native speaker uses this
+            - usageTags: include only applicable tags, empty array if none
+            - synonyms: 2-5 common synonyms, empty array if none
+            - For phrases: treat as single unit, lemma is the base form of the phrase
+            - categoryCode: pick the single best matching category from the list above, use GENERAL if unsure
+            """;
     }
 
     private String buildPrompt(String text, String context) {
@@ -91,6 +99,12 @@ public class OpenAiWordEnricher implements WordEnricher {
             String content = root.path("choices").get(0).path("message").path("content").asText();
             JsonNode data = objectMapper.readTree(content);
 
+            String categoryCode = data.path("categoryCode").asText("GENERAL");
+            Long categoryId = categoryRepository.findByCode(categoryCode)
+                    .or(() -> categoryRepository.findByCode("GENERAL"))
+                    .map(CategoryEntity::getId)
+                    .orElse(null);
+
             return WordEnrichmentEntity.builder()
                     .lemma(data.path("lemma").asText(originalText.toLowerCase()))
                     .partOfSpeech(data.path("partOfSpeech").asText(null))
@@ -104,6 +118,7 @@ public class OpenAiWordEnricher implements WordEnricher {
                     .model(properties.model())
                     .rawAiResponse(responseBody)
                     .enrichedAt(Instant.now())
+                    .categoryId(categoryId)
                     .build();
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse OpenAI response", e);

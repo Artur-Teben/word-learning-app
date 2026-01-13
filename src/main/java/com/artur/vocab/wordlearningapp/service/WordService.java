@@ -1,8 +1,10 @@
 package com.artur.vocab.wordlearningapp.service;
 
+import com.artur.vocab.wordlearningapp.domain.entity.CategoryEntity;
 import com.artur.vocab.wordlearningapp.domain.entity.WordEnrichmentEntity;
 import com.artur.vocab.wordlearningapp.domain.entity.WordEntity;
 import com.artur.vocab.wordlearningapp.domain.enums.ProcessingStatus;
+import com.artur.vocab.wordlearningapp.repo.CategoryRepository;
 import com.artur.vocab.wordlearningapp.web.dto.CreateWordRequest;
 import com.artur.vocab.wordlearningapp.mapper.WordMapper;
 import com.artur.vocab.wordlearningapp.repo.WordRepository;
@@ -20,9 +22,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WordService {
 
-    private final WordRepository wordRepository;
-    private final WordMapper wordMapper;
     private final WordEnricher wordEnricher;
+    private final WordMapper wordMapper;
+    private final WordRepository wordRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public WordEntity addWord(CreateWordRequest request) {
@@ -52,6 +55,11 @@ public class WordService {
             return enrichAndSave(word);
         }
         return word;
+    }
+
+    public CategoryEntity getCategory(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Category not found: " + id));
     }
 
     private WordEntity enrichAndSave(WordEntity word) {
